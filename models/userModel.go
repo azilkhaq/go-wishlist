@@ -5,9 +5,9 @@ import (
 	"strings"
 	"wishlist/entities"
 	"wishlist/helper"
-	"wishlist/middleware"
+	// "wishlist/middleware"
 
-	"github.com/jinzhu/gorm"
+	// "github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -67,7 +67,7 @@ func (u *WhistUser) Validate(action string) error {
 	}
 }
 
-func (u *WhistUser) SaveUsers(db *gorm.DB) (*WhistUser, error) {
+func (u *WhistUser) SaveUsers() (*WhistUser, error) {
 	var err error
 	u.Uid = helper.GENERATEUUID()
 	u.Status = true
@@ -79,41 +79,41 @@ func (u *WhistUser) SaveUsers(db *gorm.DB) (*WhistUser, error) {
 	return u, nil
 }
 
-func (u *WhistUser) FindAllUsers(db *gorm.DB, middleware *middleware.Access) (*[]WhistUser, error) {
-	var err error
-	var users []WhistUser
+// func (u *WhistUser) FindAllUsers(db *gorm.DB, middleware *middleware.Access) (*[]WhistUser, error) {
+// 	var err error
+// 	var users []WhistUser
 
-	err = db.Debug().Where("status != ?", false).Find(&users).Error
-	if err != nil {
-		return &[]WhistUser{}, err
-	}
-	return &users, err
-}
+// 	err = db.Debug().Where("status != ?", false).Find(&users).Error
+// 	if err != nil {
+// 		return &[]WhistUser{}, err
+// 	}
+// 	return &users, err
+// }
 
-func (u *WhistUser) FindUsersByID(db *gorm.DB, uid string, middleware *middleware.Access) (*[]WhistUser, error) {
-	var err error
-	users := []WhistUser{}
+// func (u *WhistUser) FindUsersByID(db *gorm.DB, uid string, middleware *middleware.Access) (*[]WhistUser, error) {
+// 	var err error
+// 	users := []WhistUser{}
 
-	err = db.Debug().Model(&WhistUser{}).Where("uid = ? and status != ?", uid, false).Find(&users).Error
-	if err != nil {
-		return &[]WhistUser{}, err
-	}
-	return &users, nil
-}
+// 	err = db.Debug().Model(&WhistUser{}).Where("uid = ? and status != ?", uid, false).Find(&users).Error
+// 	if err != nil {
+// 		return &[]WhistUser{}, err
+// 	}
+// 	return &users, nil
+// }
 
-func (u *WhistUser) SaveUpdateUsers(db *gorm.DB, uid string, middleware *middleware.Access) (*WhistUser, error) {
-	err := db.Debug().Model(&WhistUser{}).Where("uid = ?", uid).Update(&u).Error
-	if err != nil {
-		return &WhistUser{}, err
-	}
-	return u, nil
-}
+// func (u *WhistUser) SaveUpdateUsers(db *gorm.DB, uid string, middleware *middleware.Access) (*WhistUser, error) {
+// 	err := db.Debug().Model(&WhistUser{}).Where("uid = ?", uid).Update(&u).Error
+// 	if err != nil {
+// 		return &WhistUser{}, err
+// 	}
+// 	return u, nil
+// }
 
-func (u *WhistUser) SaveDeleteUsers(db *gorm.DB, uid string, middleware *middleware.Access) (*WhistUser, error) {
-	u.Status = false
-	err := db.Debug().Model(&WhistUser{}).Where("uid = ?", uid).Update(&u).Error
-	if err != nil {
-		return &WhistUser{}, err
-	}
-	return u, nil
-}
+// func (u *WhistUser) SaveDeleteUsers(db *gorm.DB, uid string, middleware *middleware.Access) (*WhistUser, error) {
+// 	u.Status = false
+// 	err := db.Debug().Model(&WhistUser{}).Where("uid = ?", uid).Update(&u).Error
+// 	if err != nil {
+// 		return &WhistUser{}, err
+// 	}
+// 	return u, nil
+// }

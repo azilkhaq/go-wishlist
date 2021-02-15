@@ -9,5 +9,6 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.3.0
 	github.com/mileusna/crontab v1.0.1 // indirect
+	github.com/rs/cors v1.7.0 // indirect
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 )

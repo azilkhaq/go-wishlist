@@ -1,12 +1,14 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 	"wishlist/entities"
+	"wishlist/helper"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -108,9 +110,49 @@ func ExtractTokenMetadata(r *http.Request) (*Access, error) {
 	return nil, err
 }
 
-func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		next(w, r)
-	}
+func JwtAuthentication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tokenHeader := r.Header.Get("Authorization")
+
+		if r.URL.Path == "/users/add" {
+            next.ServeHTTP(w, r)
+            return
+        }
+
+		if tokenHeader == "" {
+			resp := helper.Message(http.StatusUnauthorized, "Missing auth token")
+			helper.Response(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		splitted := strings.Split(tokenHeader, " ") 
+		if len(splitted) != 2 {
+			resp := helper.Message(http.StatusUnauthorized, "Missing auth token")
+			helper.Response(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		tokenPart := splitted[1] 
+
+		claims := jwt.MapClaims{}
+		token, err := jwt.ParseWithClaims(tokenPart, claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("JWT_SECRET")), nil
+		})
+
+		if err != nil {
+			resp := helper.Message(http.StatusUnauthorized, "Missing auth token")
+			helper.Response(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		if !token.Valid {
+			resp := helper.Message(http.StatusUnauthorized, "Missing auth token")
+			helper.Response(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "user", claims)
+		r = r.WithContext(ctx)
+		next.ServeHTTP(w, r)
+	})
 }
