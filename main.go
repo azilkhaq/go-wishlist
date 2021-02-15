@@ -14,8 +14,8 @@ import (
 var server = controllers.Server{}
 
 func main() {
-	var err error
-	err = godotenv.Load()
+
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error getting env, %v", err)
 	}
