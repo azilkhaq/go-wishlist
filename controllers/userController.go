@@ -10,6 +10,7 @@ import (
 )
 
 func CreateUsers(w http.ResponseWriter, r *http.Request) {
+	
 	data := &models.WhistUser{}
 	err := json.NewDecoder(r.Body).Decode(data)
 	if err != nil {
