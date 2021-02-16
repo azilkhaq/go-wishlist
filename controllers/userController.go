@@ -6,11 +6,11 @@ import (
 	"wishlist/helper"
 	"wishlist/models"
 
-	// "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 )
 
-func CreateUsers(w http.ResponseWriter, r *http.Request) {
-	
+func Register(w http.ResponseWriter, r *http.Request) {
+
 	data := &models.WhistUser{}
 	err := json.NewDecoder(r.Body).Decode(data)
 	if err != nil {
@@ -41,7 +41,7 @@ func CreateUsers(w http.ResponseWriter, r *http.Request) {
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	
-	result, err := models.FindAllUsers()
+	result, err := models.SaveAllUsers()
 	if err != nil {
 		resp := helper.Message(http.StatusBadRequest, err.Error())
 		helper.Response(w, http.StatusBadRequest, resp)
@@ -53,79 +53,60 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	helper.Response(w, http.StatusOK, resp)
 }
 
-// func GetUsersByID(w http.ResponseWriter, r *http.Request) {
-// 	token, err := middleware.ExtractTokenMetadata(r)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+func GetSingleUsers(w http.ResponseWriter, r *http.Request) {
 
-// 	vars := mux.Vars(r)
-// 	uid := vars["id"]
+	vars := mux.Vars(r)
+	uid := vars["id"]
 
-// 	data := models.WhistUser{}
-// 	result, err := data.FindUsersByID(server.DB, uid, token)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+	result, err := models.SaveSingleUsers(uid)
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, err.Error())
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// 	resp := helper.Message(http.StatusOK, "Successfuly")
-// 	resp["data"] = result
-// 	helper.Response(w, http.StatusOK, resp)
-// }
+	resp := helper.Message(http.StatusOK, "Successfuly")
+	resp["data"] = result
+	helper.Response(w, http.StatusOK, resp)
+}
 
-// func UpdateUsers(w http.ResponseWriter, r *http.Request) {
-// 	token, err := middleware.ExtractTokenMetadata(r)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+func UpdateUsers(w http.ResponseWriter, r *http.Request) {
+	
+	vars := mux.Vars(r)
+	uid := vars["id"]
 
-// 	vars := mux.Vars(r)
-// 	uid := vars["id"]
+	data := &models.WhistUser{}
+	err := json.NewDecoder(r.Body).Decode(data)
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, err.Error())
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// 	data := &models.WhistUser{}
-// 	err = json.NewDecoder(r.Body).Decode(data)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+	_, err = data.SaveUpdateUsers(uid)
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, err.Error())
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// 	_, err = data.SaveUpdateUsers(server.DB, uid, token)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+	resp := helper.Message(http.StatusOK, "Successfuly")
+	helper.Response(w, http.StatusOK, resp)
+}
 
-// 	resp := helper.Message(http.StatusOK, "Successfuly")
-// 	helper.Response(w, http.StatusOK, resp)
-// }
+func DeleteUsers(w http.ResponseWriter, r *http.Request) {
 
-// func DeleteUsers(w http.ResponseWriter, r *http.Request) {
-// 	token, err := middleware.ExtractTokenMetadata(r)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+	vars := mux.Vars(r)
+	uid := vars["id"]
 
-// 	vars := mux.Vars(r)
-// 	uid := vars["id"]
+	data := &models.WhistUser{}
+	_, err := data.SaveDeleteUsers(uid)
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, err.Error())
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// 	data := models.WhistUser{}
-// 	_, err = data.SaveDeleteUsers(server.DB, uid, token)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
-
-// 	resp := helper.Message(http.StatusOK, "Successfuly")
-// 	helper.Response(w, http.StatusOK, resp)
-// }
+	resp := helper.Message(http.StatusOK, "Successfuly")
+	helper.Response(w, http.StatusOK, resp)
+}

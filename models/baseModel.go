@@ -33,3 +33,7 @@ func init() {
 	db = conn
 	db.Debug().AutoMigrate(&WhistBm{}, &WhistUser{}) //Database migration
 }
+
+func GetDB() *gorm.DB {
+	return db
+}

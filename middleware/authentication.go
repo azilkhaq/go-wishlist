@@ -52,7 +52,7 @@ func JwtAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenHeader := r.Header.Get("Authorization")
 
-		if r.URL.Path == "/users/add" || r.URL.Path == "/login" {
+		if r.URL.Path == "/register" || r.URL.Path == "/login" {
             next.ServeHTTP(w, r)
             return
         }
