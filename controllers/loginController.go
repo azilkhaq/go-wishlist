@@ -1,54 +1,30 @@
 package controllers
 
-// import (
-// 	"net/http"
-// 	"wishlist/entities"
-// 	"wishlist/helper"
-// 	"wishlist/middleware"
-// 	"wishlist/models"
+import (
+	"encoding/json"
+	"net/http"
+	"wishlist/helper"
+	"wishlist/models"
+)
 
-// 	"golang.org/x/crypto/bcrypt"
-// )
+func Login(w http.ResponseWriter, r *http.Request) {
+	
+	data := &models.WhistUser{}
+	err := json.NewDecoder(r.Body).Decode(data)
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, err.Error())
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// func Login(w http.ResponseWriter, r *http.Request) {
-// 	type M map[string]interface{}
-// 	email, password, ok := r.BasicAuth()
+	token, err := data.SignIn()
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, "email or password incorrect")
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// 	if !ok {
-// 		http.Error(w, "Invalid email or password . ", http.StatusBadRequest)
-// 		return
-// 	}
-// 	token, err := server.SignIn(email, password)
-// 	if err != nil {
-// 		helper.Response(w, http.StatusUnauthorized, M{
-// 			"status":  http.StatusBadRequest,
-// 			"message": "email or password incorrect",
-// 		})
-// 		return
-// 	}
-
-// 	helper.Response(w, http.StatusOK,
-// 		M{
-// 			"data":    token,
-// 			"message": "Successfully",
-// 			"status":  http.StatusOK,
-// 		},
-// 	)
-// }
-
-// func SignIn(email string, password string) (map[string]string, error) {
-// 	var err error
-
-// 	users := entities.WhistUser{}
-// 	err = server.DB.Debug().Model(entities.WhistUser{}).Where("email_address = ?", email).Take(&users).Error
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	err = models.VerifyPassword(users.Password, password)
-// 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-// 		return nil, err
-// 	}
-
-// 	return middleware.CreateToken(users.Uid, users.EmailAddress, users.PhoneNumber, users.Role)
-// }
+	resp := helper.Message(http.StatusOK, "Successfully")
+	resp["data"] = token
+	helper.Response(w, http.StatusBadRequest, resp)
+}

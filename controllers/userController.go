@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"wishlist/helper"
-	// "wishlist/middleware"
 	"wishlist/models"
 
 	// "github.com/gorilla/mux"
@@ -39,26 +38,19 @@ func CreateUsers(w http.ResponseWriter, r *http.Request) {
 	helper.Response(w, http.StatusCreated, resp)
 }
 
-// func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-// 	token, err := middleware.ExtractTokenMetadata(r)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
+func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	
+	result, err := models.FindAllUsers()
+	if err != nil {
+		resp := helper.Message(http.StatusBadRequest, err.Error())
+		helper.Response(w, http.StatusBadRequest, resp)
+		return
+	}
 
-// 	data := models.WhistUser{}
-// 	result, err := data.FindAllUsers(server.DB, token)
-// 	if err != nil {
-// 		resp := helper.Message(http.StatusBadRequest, err.Error())
-// 		helper.Response(w, http.StatusBadRequest, resp)
-// 		return
-// 	}
-
-// 	resp := helper.Message(http.StatusOK, "Successfuly")
-// 	resp["data"] = result
-// 	helper.Response(w, http.StatusOK, resp)
-// }
+	resp := helper.Message(http.StatusOK, "Successfuly")
+	resp["data"] = result
+	helper.Response(w, http.StatusOK, resp)
+}
 
 // func GetUsersByID(w http.ResponseWriter, r *http.Request) {
 // 	token, err := middleware.ExtractTokenMetadata(r)

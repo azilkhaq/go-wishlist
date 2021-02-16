@@ -5,7 +5,7 @@ import (
 	"strings"
 	"wishlist/entities"
 	"wishlist/helper"
-	// "wishlist/middleware"
+	"wishlist/middleware"
 
 	// "github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
@@ -67,6 +67,23 @@ func (u *WhistUser) Validate(action string) error {
 	}
 }
 
+
+func (u *WhistUser) SignIn() (map[string]string, error) {
+
+	users := WhistUser{}
+	err := db.Debug().Model(WhistUser{}).Where("email_address = ?", u.EmailAddress).Take(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = VerifyPassword(users.Password, u.Password)
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		return nil, err
+	}
+
+	return middleware.CreateToken(users.Uid, users.EmailAddress, users.PhoneNumber, users.Role)
+}
+
 func (u *WhistUser) SaveUsers() (*WhistUser, error) {
 	var err error
 	u.Uid = helper.GENERATEUUID()
@@ -79,16 +96,16 @@ func (u *WhistUser) SaveUsers() (*WhistUser, error) {
 	return u, nil
 }
 
-// func (u *WhistUser) FindAllUsers(db *gorm.DB, middleware *middleware.Access) (*[]WhistUser, error) {
-// 	var err error
-// 	var users []WhistUser
+func FindAllUsers() (*[]WhistUser, error) {
 
-// 	err = db.Debug().Where("status != ?", false).Find(&users).Error
-// 	if err != nil {
-// 		return &[]WhistUser{}, err
-// 	}
-// 	return &users, err
-// }
+	var users []WhistUser
+
+	err := db.Debug().Where("status != ?", false).Find(&users).Error
+	if err != nil {
+		return &[]WhistUser{}, err
+	}
+	return &users, err
+}
 
 // func (u *WhistUser) FindUsersByID(db *gorm.DB, uid string, middleware *middleware.Access) (*[]WhistUser, error) {
 // 	var err error

@@ -27,13 +27,13 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Use(middleware.JwtAuthentication)
-	router.HandleFunc("/users/add", controllers.CreateUsers).Methods("POST")
-
+	
 	// // Auth
-	// route("/login", setMiddleJSON(server.Login)).Methods("POST")
-
+	router.HandleFunc("/login", controllers.Login).Methods("POST")
+	
 	// Users
-	// route("/users/get", setMiddleJSON(server.GetAllUsers)).Methods("GET")
+	router.HandleFunc("/users/add", controllers.CreateUsers).Methods("POST")
+	router.HandleFunc("/users/get", controllers.GetAllUsers).Methods("GET")
 	// route("/users/get/{id}", setMiddleJSON(server.GetUsersByID)).Methods("GET")
 	// route("/users/update/{id}", setMiddleJSON(server.UpdateUsers)).Methods("PUT")
 	// route("/users/delete/{id}", setMiddleJSON(server.DeleteUsers)).Methods("DELETE")
